@@ -12,7 +12,6 @@ import csv
 #from helpers.py import download_and_save_iris_dataset
 # BaseModel Class
 
-from abc import ABC, abstractmethod
 import numpy as np
 from time import time
 
@@ -271,6 +270,8 @@ class Iterator:
 
 class DataHandler:
     def __init__(self, file_path):
+
+        print("file name is : ",file_path)
         self.data = pd.DataFrame(self._read_csv(file_path))
         # Assuming first row is header
         self.data.columns = self.data.iloc[0]
@@ -281,6 +282,8 @@ class DataHandler:
             reader = csv.reader(file)
             for row in reader:
                 yield row
+        #return pd.read_csv(file_path).values.tolist()
+
 
     @staticmethod
     def display_columns(data):
@@ -335,13 +338,42 @@ def best_performance(resutls):
     #print("temp : ",temp)
     return vall,name
 
+
+def Factory(language, **kwargs):
+    localizers = {
+        "DataHandler": DataHandler,
+        "textfilehandling": textfilehandling,
+        "Iterator": Iterator,
+        "ModelManager": ModelManager,
+        "textfilehandling": textfilehandling,
+        "vector_multiplication": vector_multiplication
+    }
+
+    # Fetch the localizer class
+    localizer_class = localizers.get(language)
+    print(localizer_class(**kwargs))
+    if not localizer_class:
+        raise ValueError(f"Unsupported language: {language}")
+
+    # Create an instance of the localizer with the given keyword arguments
+    return localizer_class(**kwargs)
+
+
+
+
+
+
 def main():
-    data_handler = DataHandler('iris.csv')
+
+    #data_handler = DataHandler('iris.csv')
+    data_handler = Factory("DataHandler",file_path = "iris.csv")
+
     data_handler.preprocess()  # this is static method which is directly called by class name    
     X_train, X_test, y_train, y_test = data_handler.get_train_test_split()
 
     # Instantiate the model manager
-    model_manager = ModelManager()
+    #model_manager = ModelManager()
+    model_manager = Factory("ModelManager")
 
     # Prompt the user for model selection
     print("Select models to add:")
@@ -385,8 +417,8 @@ def main():
     print("time for Row column multiplication method : ",obj1.timefor_RC_method())
 
 
-
-    obj = vector_multiplication(100,100)
+    obj = Factory("vector_multiplication",row=100,col=100)
+    #obj = vector_multiplication(100,100)
     obj.vector_product()
     print("time for vector multiplication : ",obj.time_forvector())
 
