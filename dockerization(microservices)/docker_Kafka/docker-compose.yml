@@ -2,22 +2,18 @@ version: '3.9'
 
 services:
   file1:
-    build:
-      context: ./file1
-      dockerfile: Dockerfile
+    image: my_image_file1
     ports:
       - "8000:8000"
     volumes:
       - share_data:/data
 
   file2:
-    build:
-      context: ./file2
-      dockerfile: Dockerfile
+    image: my_image_file2
     ports:
       - "8001:8001"
     volumes:
       - share_data:/data
+
 volumes:
   share_data:
-
